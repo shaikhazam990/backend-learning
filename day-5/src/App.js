@@ -4,7 +4,7 @@ const { log } = require('console')
 const express = require('express')
 
 const app = express()
-app.use(express.json())
+app.use(express.json()) // middleware kyuki express data read nhi kr pata isliye use krte hain yeh
 
 const notes = []
 
