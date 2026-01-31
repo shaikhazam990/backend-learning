@@ -1,8 +1,9 @@
 // server ko start krne k liye 
 // database ko connect krne k liye 
-require("dotenv").config(   )
+require("dotenv").config()
 const app = require('./src/app')
 const connectToDb = require('./src/config/database')
+
 
 connectToDb()
 
