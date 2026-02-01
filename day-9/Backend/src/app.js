@@ -1,8 +1,10 @@
 const express = require('express')
 
 const notemodels = require('./models/model.note')
+const cors = require("cors")
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 app.post("/api/notes", async (req,res)=>{
@@ -18,11 +20,11 @@ app.post("/api/notes", async (req,res)=>{
 })
 
 app.get("/api/notes", async (req,res)=>{
-    const note = await notemodels.find()
+    const notes = await notemodels.find()
 
     res.status(200).json({
         message:"fetched note successfully",
-        note
+        notes
     })
 })
 
