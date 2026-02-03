@@ -27,3 +27,28 @@ html, body, #root {
 
 }
 
+.note-create-form{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-inline: 2rem;
+  padding-block: 2rem;
+}
+
+input{
+  width: 12rem;
+  height: 2.2rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+button{
+  background: rgb(130, 24, 24);
+  border-radius: 0.75rem;
+  padding-block: 1rem;
+  padding-inline: 1rem ;
+  color: rgb(167, 152, 152);
+}
+button:active{
+  transform: scale(0.95);
+}
