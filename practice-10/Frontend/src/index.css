@@ -11,13 +11,49 @@ html, body, #root {
   color: wheat;
 }
 
+
 .notes{
   display: flex;
-  justify-content: center;
-  padding-inline: 2rem;
+  gap: 2rem;
   padding-block: 2rem;
-  background-color: rgb(95, 95, 95);
+  padding-inline: 2rem;
+  flex-wrap: wrap;
+  overflow: hidden;
 }
+
+
 .note{
-  
+  max-width: 20rem;
+  background-color: rgb(114, 112, 112);
+   border-radius: 2rem;
+   padding: 2rem;
+   display: flex;
+   justify-content: space-between;
+   overflow: hidden;
+   flex-direction: column;
+
+}
+
+.create-form{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+    padding-inline: 2rem;
+  padding-block: 2rem;
+}
+input{
+  width: 15rem;
+  height: 3rem;
+  border-radius: 1rem;
+  text-align: center;
+
+
+}
+
+button{
+  background-color: rgb(46, 142, 46);
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 1rem;
 }
