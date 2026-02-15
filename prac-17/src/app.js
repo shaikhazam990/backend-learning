@@ -14,4 +14,6 @@ app.use("/api/auth", authRouter)
 
 app.use("/api/posts", postRouter)
 
+app.use("/api/posts", postRouter)
+
 module.exports=app
