@@ -24,15 +24,26 @@ async function createPostController(req,res){
         return res.status(401).json({
             message:"unauthorized process"
         })
-        
     }
+
+    console.log(decode)
 
     const files = await client.files.upload({
   file: await toFile(Buffer.from(req.file.buffer), 'file'),
   fileName: 'test',
   folder: "prac-insta-clone"
 });
-        res.send(files)
+        // res.send(files)
+        const post = await postModel.create({
+        caption:req.body.caption,
+        imgUrl:files.url,
+        user:decode.id
+    })
+
+    return res.status(201).json({
+        message:"post created successfully",
+        post
+    })
 }
 
 
