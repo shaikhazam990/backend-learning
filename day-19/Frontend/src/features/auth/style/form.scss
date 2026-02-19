@@ -32,6 +32,11 @@ main{
             background-color: #bd0c23;
             color: whitesmoke;
             cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            
+            &:active {
+            transform: scale(0.95);
+  }
         }
     }
 
