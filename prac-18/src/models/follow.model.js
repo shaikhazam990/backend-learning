@@ -17,7 +17,7 @@ const followSchema = new mongoose.Schema({
         }
     }
 }, {
-    timestamps: true
+    timestamps: true,
 })
 
 followSchema.index({followee:1, follower:1}, {unique:true})
