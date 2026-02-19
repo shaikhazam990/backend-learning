@@ -7,6 +7,7 @@ const postRouter = express.Router()
 const identifyUser = require("../middlewares/auth.middleware")
 
 
+
 postRouter.post("/", upload.single("image"),identifyUser, postController.CreatePostController)
 
 // GET api/posts/ [protected]
@@ -16,6 +17,10 @@ postRouter.get("/",identifyUser, postController.getPostController)
 // api/posts/details/id of that user want to fetch
 
 postRouter.get("/details/:postId",identifyUser, postController.getPostDetailsController)
+
+// api/posts/like/:postId
+
+postRouter.post("/like/:postId", identifyUser, postController.likePostController)
 
 
 module.exports=postRouter
