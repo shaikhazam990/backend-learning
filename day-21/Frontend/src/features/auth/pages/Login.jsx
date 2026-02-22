@@ -1,21 +1,37 @@
 import React, { useState } from 'react'
+import "../style/form.scss"
 import { Link } from 'react-router'
-import '../Style/form.scss'
 import { useAuth } from '../hooks/useAuth'
+import { useNavigate } from 'react-router'
+
 const Login = () => {
 
-    const {user,loading, handleLogin} = useAuth()
+    const { user, loading, handleLogin } = useAuth()
 
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
-    const handleSubmit= async (e)=>{
+    const [ username, setUsername ] = useState("")
+    const [ password, setPassword ] = useState("")
+
+    const navigate = useNavigate()
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        await handleLogin(username,password)
-        console.log("user loggedIn")
+        await handleLogin(username, password)
+
+        navigate('/')
+
     }
-  return (
-    <main>
+
+    if (loading) {
+        return (<main>
+            <h1>Loading.....</h1>
+        </main>)
+    }
+
+
+    return (
+
+        <main>
             <div className="form-container">
                 <h1>Login</h1>
                 <form onSubmit={handleSubmit} >
@@ -33,10 +49,10 @@ const Login = () => {
                         placeholder='Enter password' />
                     <button className='button primary-button' >Login</button>
                 </form>
-                <p>Don't have an account ? <Link to={"/register"} >Create Account.</Link></p>
+                <p>Don't have an account ? <Link to={"/register"} >Create One.</Link></p>
             </div>
         </main>
-  )
+    )
 }
 
 export default Login
