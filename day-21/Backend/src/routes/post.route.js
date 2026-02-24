@@ -7,7 +7,7 @@ const postRouter = express.Router()
 const identifyUser = require("../middlewares/auth.middleware")
 
 
-postRouter.post("/", upload.single("image"),identifyUser, postController.CreatePostController)
+postRouter.post("/", identifyUser, upload.single("image"),postController.CreatePostController)
 
 // GET api/posts/ [protected]
 
@@ -19,6 +19,10 @@ postRouter.get("/details/:postId",identifyUser, postController.getPostDetailsCon
 
 
 postRouter.post("/like/:postId", identifyUser, postController.likePostController)
+
+// get => /api/posts/feed
+
+postRouter.get("/feed", identifyUser, postController.getFeedController)
 
 
 module.exports=postRouter
