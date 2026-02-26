@@ -1,7 +1,11 @@
-import React from 'react'
-import FaceExpression from './features/expression/pages/FaceExpression'
+import { useState } from 'react'
 
-const App = () => {
+import './App.css'
+import FaceExpression from './features/expression/components/FaceExpression'
+
+function App() {
+  const [count, setCount] = useState(0)
+
   return (
     <FaceExpression/>
   )
