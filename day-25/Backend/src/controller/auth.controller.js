@@ -97,6 +97,14 @@ async function getMeController(req,res){
     
 }
 
+async function logoutController(req,res){
+    const token = req.cookie.token
+    res.clearCookie("token")
+
+    
+    
+}
+
 module.exports={
     registerController,
     loginController,
