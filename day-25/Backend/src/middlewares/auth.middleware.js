@@ -1,9 +1,10 @@
 const blacklistModel = require("../model/blacklist.model")
 const userModel = require("../model/user.model")
 const jwt = require("jsonwebtoken")
+const redis = require("../config/cache")
 
 async function authUser(req,res,next) {
-    const token = req.cookie.token
+    const token = req.cookies.token
 
     if(!token){
         return res.status(401).json({
@@ -11,9 +12,8 @@ async function authUser(req,res,next) {
         })
     }
 
-    const istokenBlacklisted = await blacklistModel.findOne({
-        token
-    })
+
+    const istokenBlacklisted = await redis.get(token)
 
     if(istokenBlacklisted){
         return res.status(401).json({
