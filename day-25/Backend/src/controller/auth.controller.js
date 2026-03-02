@@ -56,7 +56,7 @@ async function loginController(req,res){
     }).select("+password")
 
     if(!user){
-        res.status(400).json({
+        return res.status(400).json({
             message:"Invalid credentials"
         })
     }
@@ -64,7 +64,7 @@ async function loginController(req,res){
     const passwordValid = await bcrypt.compare(password,user.password)
 
     if(!passwordValid){
-        res.status(400).json({
+        return res.status(400).json({
             message:"Invalid credentials"
         })
     }
