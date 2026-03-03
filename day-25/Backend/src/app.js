@@ -14,8 +14,10 @@ app.use(cors({
 
 // "routes require"
 const authRoute = require("./routes/auth.routes")
+const songRouter = require("./routes/song.routes")
 
 // use of routes
 app.use("/api/auth", authRoute)
+app.use("/api/songs", songRouter)
 
 module.exports= app
