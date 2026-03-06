@@ -1,28 +1,32 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const songSchema = new mongoose.Schema({
-    url:{
-        type:String,
-        required:true
+  url: {
+    type: String,
+    required: true,
+  },
+  posterUrl: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  // Artist name extracted from ID3 tags when song is uploaded
+  artist: {
+    type: String,
+    default: "Unknown Artist",
+  },
+  mood: {
+    type: String,
+    enum: {
+      values: ["sad", "happy", "surprised", "angry", "neutral"],
+      message: "{VALUE} is not a valid mood",
     },
-    posterUrl:{
-        type:String,
-        required:true
-    },
-    title:{
-        type:String,
-        required:true
-    },
-    mood:{
-        type:String,
-        enum:{
-            values:["sad", "happy", "surprised"],
-            message:"enum this is "
-        }
+  },
+});
 
-    }
-})
+const songModel = mongoose.model("songs", songSchema);
 
-    const songModel = mongoose.model("songs", songSchema)
-
-    module.exports=songModel
+module.exports = songModel;

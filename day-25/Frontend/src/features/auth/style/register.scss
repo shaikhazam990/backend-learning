@@ -1,36 +1,200 @@
-.register-page{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+// register.scss
+// globle.scss already handles: reset, body bg, color, font-family
+// button.scss already handles: .button base styles
+// This file: ONLY register page specific styles
 
-    .form-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        min-width: 300px;
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  // ── Animated background blobs (mirrored from login for variety) ──
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: blobFloat 8s ease-in-out infinite alternate;
+  }
+
+  &::before {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(221, 66, 0, 0.15), transparent 70%);
+    top: -150px;
+    right: -150px;
+    filter: blur(60px);
+  }
+
+  &::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(221, 66, 0, 0.08), transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    filter: blur(80px);
+    animation-delay: -4s;
+  }
+}
+
+@keyframes blobFloat {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.15) translate(20px, 20px); }
+}
+
+// ── Card ─────────────────────────────────────────────────
+.register-page .form-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 44px 40px;
+  position: relative;
+  z-index: 1;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ── Logo ─────────────────────────────────────────────────
+.register-page .logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-align: center;
+  margin-bottom: 4px;
+
+  span {
+    color: #dd4200;
+  }
+}
+
+.register-page .tagline {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 36px;
+}
+
+// ── Heading ───────────────────────────────────────────────
+.register-page h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: whitesmoke;
+  margin-bottom: 28px;
+}
+
+// ── Form fields ───────────────────────────────────────────
+.register-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: whitesmoke;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+
+    &::placeholder {
+      color: #3a3a3a;
     }
 
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-
-            input{
-                padding: 0.5rem;
-                border-radius: 0.25rem;
-                border: 1px solid #ccc;
-
-                border: none;
-                outline: none;
-            }
-        }
+    &:focus {
+      border-color: #dd4200;
+      background: rgba(221, 66, 0, 0.05);
+      box-shadow: 0 0 0 3px rgba(221, 66, 0, 0.1);
     }
+  }
+}
+
+// ── Submit button (extends global .button) ─────────────────
+.register-page .button {
+  width: 100%;
+  margin-top: 10px;
+  padding-block: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(221, 66, 0, 0.3);
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 28px rgba(221, 66, 0, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98) translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// ── Error message ─────────────────────────────────────────
+.register-page .auth-error {
+  background: rgba(221, 66, 0, 0.08);
+  border: 1px solid rgba(221, 66, 0, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #dd4200;
+  margin-bottom: 16px;
+}
+
+// ── Footer link ───────────────────────────────────────────
+.register-page p {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+
+  // a color from globle.scss (#dd4200) already applies
+  a:hover {
+    text-decoration: underline;
+  }
 }

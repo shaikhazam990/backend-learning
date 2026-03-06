@@ -1,48 +1,70 @@
-import React, { useState } from 'react'
-import "../style/login.scss"
-import FormGroup from '../components/FormGroup'
-import { Link } from 'react-router'
-import { useAuth } from '../hooks/useAuth'
-import { useNavigate } from 'react-router'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
+import FormGroup from "../components/FormGroup";
+import "../style/login.scss";
 
 const Login = () => {
+  const { loading, handleLogin } = useAuth();
+  const navigate = useNavigate();
 
-    const { loading, handleLogin } = useAuth()
+  const [email,    setEmail]    = useState("");
+  const [password, setPassword] = useState("");
+  const [error,    setError]    = useState("");
 
-    const navigate = useNavigate()
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
 
-    const [ email, setEmail ] = useState("")
-    const [ password, setPassword ] = useState("")
-
-    async function handleSubmit(e) {
-        e.preventDefault()
-        await handleLogin({ email, password })
-        navigate("/")
+    try {
+      await handleLogin({ email, password });
+      navigate("/");
+    } catch (err) {
+      setError("Invalid email or password. Please try again.");
     }
+  }
 
-    return (
-        <main className="login-page">
-            <div className="form-container">
-                <h1>Login</h1>
-                <form onSubmit={handleSubmit} >
-                    <FormGroup
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        placeholder="Enter your email"
-                    />
-                    <FormGroup
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        label="Password"
-                        placeholder="Enter your password"
-                    />
-                    <button className='button' type="submit">Login</button>
-                </form>
-                <p>Don't have an account? <Link to="/register">Register here</Link></p>
-            </div>
-        </main>
-    )
-}
+  return (
+    <main className="login-page">
+      <div className="form-container">
 
-export default Login
+        {/* Logo + tagline */}
+        <div className="logo">
+          <span>mood</span>ify
+        </div>
+        <p className="tagline">Music that matches your mood 🎵</p>
+
+        <h1>Welcome back</h1>
+
+        {/* Error message shown if login fails */}
+        {error && <div className="auth-error">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <FormGroup
+            label="Email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <FormGroup
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button className="button" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p>
+          Don't have an account? <Link to="/register">Register here</Link>
+        </p>
+
+      </div>
+    </main>
+  );
+};
+
+export default Login;

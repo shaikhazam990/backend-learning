@@ -28,12 +28,19 @@ const Player = () => {
 
     // Reset player when song changes
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.load()
-            setIsPlaying(false)
-            setCurrentTime(0)
-        }
-    }, [song?.url])
+    if (!audioRef.current || !song?.url) return
+    const audio = audioRef.current
+    audio.load()
+    setCurrentTime(0)
+    setDuration(0)
+    const playWhenReady = () => {
+        audio.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => setIsPlaying(false))
+    }
+    audio.addEventListener('canplay', playWhenReady, { once: true })
+    return () => audio.removeEventListener('canplay', playWhenReady)
+}, [song?.url])
 
     const togglePlay = () => {
         const audio = audioRef.current

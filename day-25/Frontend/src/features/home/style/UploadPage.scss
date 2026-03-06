@@ -1,0 +1,252 @@
+// UploadPage.scss
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+.upload-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+  padding-bottom: 100px;
+  font-family: 'DM Sans', sans-serif;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 2px; }
+}
+
+// ── Header ────────────────────────────────────────────────
+.upload-page__header {
+  margin-bottom: 28px;
+}
+
+.upload-page__title {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.upload-page__sub {
+  font-size: 13px;
+  color: #555;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+// ── Card ──────────────────────────────────────────────────
+.upload-card {
+  max-width: 520px;
+  background: #0f0f18;
+  border: 1px solid #1a1a2a;
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Drop zone ─────────────────────────────────────────────
+.drop-zone {
+  border: 2px dashed #2a2a3a;
+  border-radius: 14px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: var(--zone-color, #dd4200);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  // Dragging over state
+  &--active {
+    border-color: var(--zone-color, #dd4200);
+    background: color-mix(in srgb, var(--zone-color, #dd4200) 6%, transparent);
+  }
+
+  // File selected state — no pointer on the zone itself
+  &--has-file {
+    cursor: default;
+    border-style: solid;
+    border-color: var(--zone-color, #dd4200);
+    background: color-mix(in srgb, var(--zone-color, #dd4200) 5%, transparent);
+  }
+
+  // Empty state
+  &__empty { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  &__icon  { font-size: 40px; }
+  &__text  { font-size: 15px; font-weight: 600; color: #aaa; }
+  &__sub   { font-size: 12px; color: #555; }
+
+  // File selected state
+  &__file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__file-icon { font-size: 36px; }
+
+  &__file-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ddd;
+    word-break: break-all;
+    max-width: 360px;
+  }
+
+  &__file-size {
+    font-size: 12px;
+    color: #555;
+  }
+
+  &__remove {
+    margin-top: 4px;
+    background: transparent;
+    border: 1px solid #FF4E4E44;
+    color: #FF4E4E;
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(255, 78, 78, 0.1); }
+  }
+}
+
+// ── Mood selector ─────────────────────────────────────────
+.mood-selector {
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  &__grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+.mood-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1px solid #2a2a3a;
+  background: transparent;
+  color: #666;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--btn-color);
+    color: var(--btn-color);
+  }
+
+  &--active {
+    background: var(--btn-color);
+    border-color: var(--btn-color);
+    color: #000;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--btn-color) 30%, transparent);
+  }
+}
+
+// ── Progress bar ──────────────────────────────────────────
+.upload-progress {
+  &__bar {
+    height: 6px;
+    background: #1a1a2a;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.2s linear;
+  }
+
+  &__text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    text-align: center;
+  }
+}
+
+// ── Success / Error messages ──────────────────────────────
+.upload-success {
+  background: rgba(80, 200, 120, 0.08);
+  border: 1px solid rgba(80, 200, 120, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #50C878;
+  line-height: 1.5;
+}
+
+.upload-error {
+  background: rgba(255, 78, 78, 0.08);
+  border: 1px solid rgba(255, 78, 78, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #FF4E4E;
+  line-height: 1.5;
+}
+
+// ── Upload button ─────────────────────────────────────────
+.upload-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--mood-color, #dd4200);
+  color: #000;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    background: #2a2a3a !important;
+    color: #555;
+    box-shadow: none;
+  }
+}
+
+// ── Info note ─────────────────────────────────────────────
+.upload-note {
+  font-size: 12px;
+  color: #444;
+  line-height: 1.6;
+  text-align: center;
+
+  strong { color: #666; }
+}
