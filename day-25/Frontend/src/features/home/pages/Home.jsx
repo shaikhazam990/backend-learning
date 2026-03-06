@@ -34,6 +34,16 @@ const LIBRARY_ITEMS = [
   { id: "songs",   icon: "♪",  label: "Songs"   },
 ];
 
+// ✅ Clean junk from song titles like [DownloadMing.WS], (www.xxx.com) etc.
+function cleanTitle(title = "") {
+  return title
+    .replace(/\[.*?\]/g, "")         // remove [anything]
+    .replace(/\(www\.[^)]*\)/gi, "") // remove (www.xyz.com)
+    .replace(/\(https?[^)]*\)/gi, "") // remove (http://...)
+    .replace(/\s{2,}/g, " ")         // collapse double spaces
+    .trim();
+}
+
 export default function Home() {
   const { song, loading, handleGetSong, handlePlaySong } = useSong();
   const { user, handleLogout } = useAuth();
@@ -51,12 +61,11 @@ export default function Home() {
   const [activeNav,    setActiveNav]    = useState("home");
   const [moodSongs,    setMoodSongs]    = useState([]);
   const [songsLoading, setSongsLoading] = useState(false);
+  const [isPlaying,    setIsPlaying]    = useState(false);
 
   const mood = MOOD_CONFIG[currentMood] || MOOD_CONFIG.neutral;
 
-  useEffect(() => {
-    fetchMoodSongs(currentMood);
-  }, [currentMood]);
+  useEffect(() => { fetchMoodSongs(currentMood); }, [currentMood]);
 
   useEffect(() => {
     return () => {
@@ -67,6 +76,8 @@ export default function Home() {
 
   useEffect(() => {
     if (song?.mood) setCurrentMood(song.mood);
+    // When song changes, assume it starts playing
+    if (song) setIsPlaying(true);
   }, [song]);
 
   async function fetchMoodSongs(moodKey) {
@@ -150,6 +161,8 @@ export default function Home() {
     if (activeNav === "recent")  return <RecentlyPlayed />;
     if (activeNav === "youtube") return <YouTubeSearch />;
 
+    const cleanedTitle = cleanTitle(song?.title);
+
     return (
       <div className="home-body">
 
@@ -186,29 +199,43 @@ export default function Home() {
 
         {/* ── CENTER: Now Playing ── */}
         <div className="now-playing-panel">
-          <div className="ambient-bg" />
+
+          {/* ✅ Blurred bg poster — Spotify style */}
+          {song?.posterUrl && (
+            <div
+              className="now-playing-bg"
+              style={{ backgroundImage: `url(${song.posterUrl})` }}
+            />
+          )}
+          <div className="now-playing-overlay" />
+
+          {/* ✅ Rotating album art when playing */}
           <div className="album-art-wrap">
             {loading ? (
-              <div className="skeleton" style={{ width: 220, height: 220, borderRadius: 20 }} />
+              <div className="skeleton" style={{ width: 220, height: 220, borderRadius: "50%" }} />
             ) : song?.posterUrl ? (
-              <img className="album-art" src={song.posterUrl} alt={song.title || "Album art"} />
+              <img
+                className={`album-art ${isPlaying ? "album-art--spinning" : ""}`}
+                src={song.posterUrl}
+                alt={song.title || "Album art"}
+              />
             ) : (
               <div className="album-placeholder">🎵</div>
             )}
             {song?.posterUrl && <div className="album-art-glow" />}
           </div>
+
+          {/* Song info */}
           <div className="song-info">
             {loading ? (
               <>
-                <div className="skeleton" style={{ width: 240, height: 24, marginBottom: 8 }} />
-                <div className="skeleton" style={{ width: 90, height: 18 }} />
+                <div className="skeleton" style={{ width: 260, height: 28, marginBottom: 8 }} />
+                <div className="skeleton" style={{ width: 120, height: 16 }} />
               </>
             ) : (
               <>
                 <div className="song-title">
-                  {song?.title
-                    ? song.title.replace(/&quot;/g, '"').replace(/&amp;/g, "&")
-                    : "Detect your mood to play a song"}
+                  {cleanedTitle || "Detect your mood to play a song"}
                 </div>
                 {song?.artist && song.artist !== "Unknown Artist" && (
                   <div className="song-artist">{song.artist}</div>
@@ -256,9 +283,7 @@ export default function Home() {
                     <div className="queue-row__play-icon">{isActive ? "▐▐" : "▶"}</div>
                   </div>
                   <div className="queue-row__info">
-                    <span className="queue-row__title">
-                      {s.title.replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
-                    </span>
+                    <span className="queue-row__title">{cleanTitle(s.title)}</span>
                     {s.artist && s.artist !== "Unknown Artist" && (
                       <span className="queue-row__artist">{s.artist}</span>
                     )}

@@ -26,7 +26,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: width 0.3s ease;
 
   &__logo {
     padding: 24px 20px 20px;
@@ -39,10 +38,7 @@
       font-weight: 800;
       letter-spacing: -0.5px;
 
-      .accent {
-        color: var(--mood-color, #dd4200);
-        transition: color 0.4s;
-      }
+      .accent { color: var(--mood-color, #dd4200); transition: color 0.4s; }
     }
 
     .logo-sub {
@@ -87,18 +83,6 @@
     .item-icon  { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
     .item-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .item-badge {
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      background: var(--mood-glow, rgba(221,66,0,0.15));
-      color: var(--mood-color, #dd4200);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: all 0.4s;
-    }
-
     &:hover { color: #ccc; background: rgba(255,255,255,0.03); }
 
     &.active {
@@ -110,11 +94,7 @@
     }
   }
 
-  &__divider {
-    height: 1px;
-    background: #1a1a2a;
-    margin: 8px 16px;
-  }
+  &__divider { height: 1px; background: #1a1a2a; margin: 8px 16px; }
 
   &__user {
     padding: 14px 16px;
@@ -146,7 +126,6 @@
     .user-info {
       flex: 1;
       min-width: 0;
-
       .user-name   { font-size: 13px; font-weight: 600; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .user-status { font-size: 11px; color: #444; margin-top: 1px; }
     }
@@ -180,10 +159,8 @@
   flex-direction: column;
   overflow: hidden;
 
-  // ✅ YouTube page scroll fix
   &--scroll {
     overflow-y: auto;
-
     &::-webkit-scrollbar       { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
@@ -198,6 +175,8 @@
   padding: 18px 28px;
   border-bottom: 1px solid #1a1a2a;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 
   .topbar__greeting  { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
   .topbar__status    { font-size: 12px; color: #555; font-style: italic; }
@@ -240,6 +219,8 @@
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .section-label {
@@ -271,7 +252,6 @@
     gap: 8px;
     color: #333;
     font-size: 12px;
-
     .cam-icon { font-size: 28px; }
   }
 
@@ -318,10 +298,7 @@
   to   { top: 100%; }
 }
 
-.camera-controls {
-  display: flex;
-  gap: 8px;
-}
+.camera-controls { display: flex; gap: 8px; }
 
 .cam-btn {
   flex: 1;
@@ -340,7 +317,6 @@
     background: transparent;
     border: 1px solid #2a2a3a;
     color: #888;
-
     &:hover { border-color: var(--mood-color, #dd4200); color: var(--mood-color, #dd4200); }
   }
 
@@ -348,7 +324,6 @@
     background: transparent;
     border: 1px solid #FF4E4E44;
     color: #FF4E4E;
-
     &:hover { background: rgba(255,78,78,0.08); }
   }
 }
@@ -373,31 +348,44 @@
 }
 
 // ─────────────────────────────────────────────────────────
-// CENTER — Now Playing
+// CENTER — Now Playing  (Spotify-style cinematic bg)
 // ─────────────────────────────────────────────────────────
 .now-playing-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 32px;
-  gap: 20px;
+  padding: 32px;
+  gap: 22px;
   position: relative;
   overflow: hidden;
-
-  .ambient-bg {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: var(--mood-glow, rgba(221,66,0,0.15));
-    filter: blur(120px);
-    opacity: 0.5;
-    pointer-events: none;
-    transition: background 0.5s;
-  }
 }
 
+// ✅ Blurred poster as background
+.now-playing-bg {
+  position: absolute;
+  inset: -40px;           // bleed outside so edges aren't crisp
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) brightness(0.35) saturate(1.6);
+  transform: scale(1.15); // prevent blur edge artifacts
+  transition: background-image 0.6s ease;
+  z-index: 0;
+}
+
+// Dark vignette on top of blurred bg
+.now-playing-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(10,10,15,0.2) 0%,
+    rgba(10,10,15,0.75) 100%
+  );
+  z-index: 0;
+}
+
+// ✅ Album art — circular + spinning when playing
 .album-art-wrap {
   position: relative;
   display: flex;
@@ -406,34 +394,75 @@
 }
 
 .album-art {
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;           // ✅ circular
   object-fit: cover;
-  box-shadow: 0 24px 64px var(--mood-glow, rgba(221,66,0,0.3));
-  transition: box-shadow 0.4s;
   display: block;
+  box-shadow:
+    0 0 0 4px rgba(255,255,255,0.08),
+    0 24px 60px rgba(0,0,0,0.6),
+    0 0 80px var(--mood-glow, rgba(221,66,0,0.3));
+  transition: box-shadow 0.4s;
+
+  // ✅ Spin when playing
+  &--spinning {
+    animation: vinylSpin 8s linear infinite;
+  }
+}
+
+// Outer vinyl ring
+.album-art-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.06);
+  pointer-events: none;
+  z-index: 2;
+}
+
+// Center dot like a vinyl
+.album-art-wrap::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #0a0a0f;
+  border: 2px solid rgba(255,255,255,0.15);
+  z-index: 3;
+  pointer-events: none;
 }
 
 .album-art-glow {
   position: absolute;
-  bottom: -24px;
+  bottom: -28px;
   left: 50%;
   transform: translateX(-50%);
-  width: 160px;
+  width: 180px;
   height: 40px;
   background: var(--mood-color, #dd4200);
-  filter: blur(28px);
-  opacity: 0.3;
+  filter: blur(30px);
+  opacity: 0.35;
   border-radius: 50%;
   pointer-events: none;
   transition: background 0.4s;
+  z-index: 0;
+}
+
+@keyframes vinylSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .album-placeholder {
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
   background: #141420;
   border: 1px solid #1c1c2e;
   display: flex;
@@ -457,11 +486,14 @@
     font-weight: 700;
     max-width: 420px;
     line-height: 1.3;
+    // subtle text shadow for readability over blurred bg
+    text-shadow: 0 2px 16px rgba(0,0,0,0.8);
   }
 
   .song-artist {
     font-size: 14px;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255,255,255,0.55);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
   }
 
   .song-mood-tag {
@@ -471,10 +503,11 @@
     font-size: 11px;
     font-weight: 700;
     color: var(--mood-color, #dd4200);
-    background: var(--mood-glow, rgba(221,66,0,0.12));
-    border: 1px solid var(--mood-border, rgba(221,66,0,0.25));
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--mood-border, rgba(221,66,0,0.35));
     text-transform: uppercase;
     letter-spacing: 1px;
+    backdrop-filter: blur(6px);
     transition: all 0.4s;
   }
 }
@@ -487,6 +520,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 
   &__header {
     display: flex;
@@ -526,7 +561,6 @@
   &--active {
     background: rgba(255,255,255,0.07);
     border-color: rgba(255,255,255,0.1);
-
     .queue-row__title { color: var(--mood-color, #dd4200); }
   }
 
@@ -559,14 +593,7 @@
   &:hover &__play-icon,
   &--active &__play-icon { opacity: 1; }
 
-  &__info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
+  &__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
   &__title  { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   &__artist { font-size: 11px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -581,7 +608,6 @@
 .queue-empty {
   text-align: center;
   padding: 48px 16px;
-
   p     { font-size: 13px; margin: 0 0 6px; color: #555; }
   small { font-size: 11px; color: #333; }
 }
@@ -595,12 +621,7 @@
 // SKELETON
 // ─────────────────────────────────────────────────────────
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    #1a1a2a 25%,
-    #222235 50%,
-    #1a1a2a 75%
-  );
+  background: linear-gradient(90deg, #1a1a2a 25%, #222235 50%, #1a1a2a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
@@ -615,6 +636,4 @@
 // ─────────────────────────────────────────────────────────
 // PLAYER
 // ─────────────────────────────────────────────────────────
-.player {
-  --mood-color: var(--mood-color);
-}
+.player { --mood-color: var(--mood-color); }
