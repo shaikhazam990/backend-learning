@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// Single axios instance for all auth API calls
-// withCredentials: true → sends cookies so backend can verify JWT
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
   withCredentials: true,
 });
 
@@ -25,9 +23,6 @@ export async function login({ email, username, password }) {
   return response.data;
 }
 
-// getMe has a 3 second timeout
-// On page refresh, if backend is slow or not running,
-// we don't want the app to hang forever on a blank screen
 export async function getMe() {
   const response = await api.get("/api/auth/get-me", {
     timeout: 3000,
