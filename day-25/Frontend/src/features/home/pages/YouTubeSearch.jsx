@@ -30,7 +30,7 @@ export default function YouTubeSearch() {
     setActiveId(null);
 
     try {
-      const res  = await fetch(`/api/youtube/search?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/youtube/search?q=${encodeURIComponent(q)}`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Search failed");
