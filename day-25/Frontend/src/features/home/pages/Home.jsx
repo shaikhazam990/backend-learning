@@ -8,6 +8,8 @@ import ArtistsPage    from "./ArtistsPage";
 import UploadPage     from "./UploadPage";
 import LikedSongs     from "./LikedSong";
 import RecentlyPlayed from "./RecentlyPlayed";
+import YouTubeSearch  from "./YouTubeSearch";
+import { getAllSongs } from "../service/song.api";
 import { init, detect } from "../../Expression/utlis/utlis";
 import "../style/Home.scss";
 
@@ -20,9 +22,10 @@ const MOOD_CONFIG = {
 };
 
 const NAV_ITEMS = [
-  { id: "home",   icon: "⊞",  label: "Home"             },
-  { id: "liked",  icon: "♥",  label: "Liked Songs"      },
-  { id: "recent", icon: "🕐", label: "Recently Played"  },
+  { id: "home",    icon: "⊞",  label: "Home"            },
+  { id: "liked",   icon: "♥",  label: "Liked Songs"     },
+  { id: "recent",  icon: "🕐", label: "Recently Played" },
+  { id: "youtube", icon: "▶",  label: "YouTube Music"   },
 ];
 
 const LIBRARY_ITEMS = [
@@ -32,22 +35,28 @@ const LIBRARY_ITEMS = [
 ];
 
 export default function Home() {
-  const { song, loading, handleGetSong } = useSong();
+  const { song, loading, handleGetSong, handlePlaySong } = useSong();
   const { user, handleLogout } = useAuth();
 
   const videoRef      = useRef(null);
   const landmarkerRef = useRef(null);
   const streamRef     = useRef(null);
 
-  const [camActive,   setCamActive]   = useState(false);
-  const [modelReady,  setModelReady]  = useState(false);
-  const [detecting,   setDetecting]   = useState(false);
-  const [expression,  setExpression]  = useState("Detecting...");
-  const [currentMood, setCurrentMood] = useState(song?.mood || "sad");
-  const [statusText,  setStatusText]  = useState("Start camera to detect your mood");
-  const [activeNav,   setActiveNav]   = useState("home");
+  const [camActive,    setCamActive]    = useState(false);
+  const [modelReady,   setModelReady]   = useState(false);
+  const [detecting,    setDetecting]    = useState(false);
+  const [expression,   setExpression]   = useState("Detecting...");
+  const [currentMood,  setCurrentMood]  = useState(song?.mood || "sad");
+  const [statusText,   setStatusText]   = useState("Start camera to detect your mood");
+  const [activeNav,    setActiveNav]    = useState("home");
+  const [moodSongs,    setMoodSongs]    = useState([]);
+  const [songsLoading, setSongsLoading] = useState(false);
 
   const mood = MOOD_CONFIG[currentMood] || MOOD_CONFIG.neutral;
+
+  useEffect(() => {
+    fetchMoodSongs(currentMood);
+  }, [currentMood]);
 
   useEffect(() => {
     return () => {
@@ -59,6 +68,18 @@ export default function Home() {
   useEffect(() => {
     if (song?.mood) setCurrentMood(song.mood);
   }, [song]);
+
+  async function fetchMoodSongs(moodKey) {
+    setSongsLoading(true);
+    try {
+      const data = await getAllSongs({ mood: moodKey });
+      setMoodSongs(data.songs || []);
+    } catch (err) {
+      console.error("Failed to fetch mood songs:", err);
+    } finally {
+      setSongsLoading(false);
+    }
+  }
 
   async function startCamera() {
     try {
@@ -127,55 +148,59 @@ export default function Home() {
     if (activeNav === "upload")  return <UploadPage />;
     if (activeNav === "liked")   return <LikedSongs />;
     if (activeNav === "recent")  return <RecentlyPlayed />;
+    if (activeNav === "youtube") return <YouTubeSearch />;
 
-    // ✅ HOME VIEW — Player removed from here
     return (
       <div className="home-body">
+
+        {/* ── LEFT: Camera Panel ── */}
         <div className="camera-panel">
-          <div>
-            <p className="section-label">Face Camera</p>
-            <div className="camera-box">
-              <video ref={videoRef} autoPlay muted playsInline />
-              {!camActive && (
-                <div className="camera-placeholder">
-                  <span className="cam-icon">📷</span>
-                  Start camera below
-                </div>
-              )}
-              {detecting && <div className="scan-line" />}
-              {camActive  && <div className="mood-badge">{mood.emoji} {mood.label}</div>}
-              {camActive  && <div className="expression-label">{expression}</div>}
-            </div>
-            <div className="camera-controls">
-              {camActive ? (
-                <button className="cam-btn cam-btn--stop" onClick={stopCamera}>✕ Stop</button>
-              ) : (
-                <button className="cam-btn cam-btn--start" onClick={startCamera}>📷 Start Camera</button>
-              )}
-              <button
-                className="detect-btn"
-                onClick={handleDetectMood}
-                disabled={detecting || loading || !modelReady}
-              >
-                {detecting ? "..." : "✦ Detect"}
-              </button>
-            </div>
+          <p className="section-label">Face Camera</p>
+          <div className="camera-box">
+            <video ref={videoRef} autoPlay muted playsInline />
+            {!camActive && (
+              <div className="camera-placeholder">
+                <span className="cam-icon">📷</span>
+                Start camera below
+              </div>
+            )}
+            {detecting && <div className="scan-line" />}
+            {camActive && <div className="mood-badge">{mood.emoji} {mood.label}</div>}
+            {camActive && <div className="expression-label">{expression}</div>}
+          </div>
+          <div className="camera-controls">
+            {camActive ? (
+              <button className="cam-btn cam-btn--stop" onClick={stopCamera}>✕ Stop</button>
+            ) : (
+              <button className="cam-btn cam-btn--start" onClick={startCamera}>📷 Start</button>
+            )}
+            <button
+              className="detect-btn"
+              onClick={handleDetectMood}
+              disabled={detecting || loading || !modelReady}
+            >
+              {detecting ? "..." : "✦ Detect"}
+            </button>
           </div>
         </div>
 
+        {/* ── CENTER: Now Playing ── */}
         <div className="now-playing-panel">
           <div className="ambient-bg" />
-          {loading ? (
-            <div className="skeleton" style={{ width: 180, height: 180, borderRadius: 18 }} />
-          ) : song?.posterUrl ? (
-            <img className="album-art" src={song.posterUrl} alt={song.title || "Album art"} />
-          ) : (
-            <div className="album-placeholder">🎵</div>
-          )}
+          <div className="album-art-wrap">
+            {loading ? (
+              <div className="skeleton" style={{ width: 220, height: 220, borderRadius: 20 }} />
+            ) : song?.posterUrl ? (
+              <img className="album-art" src={song.posterUrl} alt={song.title || "Album art"} />
+            ) : (
+              <div className="album-placeholder">🎵</div>
+            )}
+            {song?.posterUrl && <div className="album-art-glow" />}
+          </div>
           <div className="song-info">
             {loading ? (
               <>
-                <div className="skeleton" style={{ width: 240, height: 24 }} />
+                <div className="skeleton" style={{ width: 240, height: 24, marginBottom: 8 }} />
                 <div className="skeleton" style={{ width: 90, height: 18 }} />
               </>
             ) : (
@@ -185,12 +210,66 @@ export default function Home() {
                     ? song.title.replace(/&quot;/g, '"').replace(/&amp;/g, "&")
                     : "Detect your mood to play a song"}
                 </div>
+                {song?.artist && song.artist !== "Unknown Artist" && (
+                  <div className="song-artist">{song.artist}</div>
+                )}
                 <div className="song-mood-tag">{mood.emoji} {mood.label}</div>
               </>
             )}
           </div>
-          {/* ❌ Player removed from here */}
         </div>
+
+        {/* ── RIGHT: Mood Songs Queue ── */}
+        <div className="mood-queue">
+          <div className="mood-queue__header">
+            <span className="mood-queue__title">{mood.emoji} {mood.label} Songs</span>
+            <span className="mood-queue__count">
+              {songsLoading ? "..." : `${moodSongs.length} songs`}
+            </span>
+          </div>
+          <div className="mood-queue__list">
+            {songsLoading && Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="queue-row queue-row--skeleton">
+                <div className="skeleton" style={{ width: 42, height: 42, borderRadius: 8, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton" style={{ width: "70%", height: 12, marginBottom: 6 }} />
+                  <div className="skeleton" style={{ width: "45%", height: 10 }} />
+                </div>
+              </div>
+            ))}
+            {!songsLoading && moodSongs.length === 0 && (
+              <div className="queue-empty">
+                <p>No {mood.label} songs yet</p>
+                <small>Upload some songs!</small>
+              </div>
+            )}
+            {!songsLoading && moodSongs.map((s) => {
+              const isActive = song?._id === s._id;
+              return (
+                <div
+                  key={s._id}
+                  className={`queue-row ${isActive ? "queue-row--active" : ""}`}
+                  onClick={() => handlePlaySong(s._id)}
+                >
+                  <div className="queue-row__art-wrap">
+                    <img className="queue-row__art" src={s.posterUrl} alt={s.title} />
+                    <div className="queue-row__play-icon">{isActive ? "▐▐" : "▶"}</div>
+                  </div>
+                  <div className="queue-row__info">
+                    <span className="queue-row__title">
+                      {s.title.replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+                    </span>
+                    {s.artist && s.artist !== "Unknown Artist" && (
+                      <span className="queue-row__artist">{s.artist}</span>
+                    )}
+                  </div>
+                  {isActive && <span className="queue-row__eq">♫</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     );
   }
@@ -275,7 +354,7 @@ export default function Home() {
         </div>
       </aside>
 
-      <div className="main-content">
+      <div className={`main-content ${activeNav === "youtube" ? "main-content--scroll" : ""}`}>
         <div className="topbar">
           <div className="topbar__greeting">
             Good {getTimeOfDay()}, {user?.username || "there"} {mood.emoji}
@@ -292,8 +371,7 @@ export default function Home() {
 
         {renderContent()}
 
-        {/* ✅ Player yahan hai — har page pe dikhega, song hamesha play hoga */}
-        <Player />
+        {activeNav !== "youtube" && <Player />}
       </div>
     </div>
   );
