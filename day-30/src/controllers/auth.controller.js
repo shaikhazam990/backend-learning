@@ -1,15 +1,12 @@
 
 export async function registerUser(req,res,next){
-    try {
-       throw new Error ("password is too weak "); 
-    } catch (error) {
-        error.status=409
-        next(error)
-        
-    }
-    
-    
-    
+    res.status(201).json({
+        message:"user registered successfully"
+    })
+
 }
+    
+    
+    
 
 export default registerUser
