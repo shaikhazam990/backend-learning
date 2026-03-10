@@ -42,7 +42,7 @@ const Protected = ({ children }) => {
 
   // getMe finished and no user found → go to login
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   // User is logged in → render the protected page
