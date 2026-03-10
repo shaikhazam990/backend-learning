@@ -1,26 +1,39 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { useAuth } from "../hooks/useAuth";
-import FormGroup from "../components/FormGroup";
+import { useState }            from "react";
+import { Link, useNavigate }   from "react-router";
+import { useAuth }             from "../hooks/useAuth";
+import FormGroup               from "../components/FormGroup";
 import "../style/login.scss";
 
 const Login = () => {
-  const { loading, handleLogin } = useAuth();
+  const { loading, handleLogin, handleGuestLogin } = useAuth();
   const navigate = useNavigate();
 
-  const [email,    setEmail]    = useState("");
-  const [password, setPassword] = useState("");
-  const [error,    setError]    = useState("");
+  const [email,        setEmail]        = useState("");
+  const [password,     setPassword]     = useState("");
+  const [error,        setError]        = useState("");
+  const [guestLoading, setGuestLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-
     try {
       await handleLogin({ email, password });
       navigate("/");
-    } catch (err) {
+    } catch {
       setError("Invalid email or password. Please try again.");
+    }
+  }
+
+  async function onGuestLogin() {
+    setGuestLoading(true);
+    setError("");
+    try {
+      await handleGuestLogin();
+      navigate("/");
+    } catch {
+      setError("Guest login failed. Please try again.");
+    } finally {
+      setGuestLoading(false);
     }
   }
 
@@ -28,15 +41,11 @@ const Login = () => {
     <main className="login-page">
       <div className="form-container">
 
-        {/* Logo + tagline */}
-        <div className="logo">
-          <span>mood</span>ify
-        </div>
+        <div className="logo"><span>mood</span>ify</div>
         <p className="tagline">Music that matches your mood 🎵</p>
 
         <h1>Welcome back</h1>
 
-        {/* Error message shown if login fails */}
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
@@ -52,15 +61,27 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
           <button className="button" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p>
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
+        {/* Divider */}
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+
+        {/* Guest Login */}
+        <button
+          className="guest-btn"
+          onClick={onGuestLogin}
+          disabled={guestLoading}
+        >
+          {guestLoading ? "Loading..." : "👤 Continue as Guest"}
+        </button>
+        <p className="guest-note">No account needed — explore instantly</p>
+
+        <p>Don't have an account? <Link to="/register">Register here</Link></p>
 
       </div>
     </main>
