@@ -5,6 +5,7 @@ import { login, register, getMe, logout, guestLogin } from "../services/auth.api
 export const useAuth = () => {
   const { user, setUser, loading, setLoading } = useContext(AuthContext);
 
+  // App load pe session check
   useEffect(() => {
     async function checkSession() {
       try {
@@ -13,7 +14,7 @@ export const useAuth = () => {
       } catch {
         setUser(null);
       } finally {
-        setLoading(false);
+        setLoading(false); // ← hamesha false karo
       }
     }
     checkSession();
@@ -21,42 +22,42 @@ export const useAuth = () => {
 
   async function handleRegister({ username, email, password }) {
     setLoading(true);
-    const data = await register({ username, email, password });
-    setUser(data.user);
-    setLoading(false);
-  }
-
-  async function handleLogin({ email, username, password }) {
-    setLoading(true);
-    const data = await login({ email, username, password });
-    setUser(data.user);
-    setLoading(false);
-  }
-
-  async function handleGuestLogin() {
-    setLoading(true);
-    const data = await guestLogin();
-    setUser(data.user);
-    setLoading(false);
-  }
-
-  async function handleGetMe() {
     try {
-      setLoading(true);
-      const data = await getMe();
+      const data = await register({ username, email, password });
       setUser(data.user);
-    } catch {
-      setUser(null);
     } finally {
       setLoading(false);
     }
   }
 
+  async function handleLogin({ email, username, password }) {
+    setLoading(true);
+    try {
+      const data = await login({ email, username, password });
+      setUser(data.user);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGuestLogin() {
+    setLoading(true);
+    try {
+      const data = await guestLogin();
+      setUser(data.user);      // ← pehle user set karo
+    } finally {
+      setLoading(false);       // ← phir loading false karo
+    }
+  }
+
   async function handleLogout() {
     setLoading(true);
-    await logout();
-    setUser(null);
-    setLoading(false);
+    try {
+      await logout();
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return {
@@ -65,7 +66,6 @@ export const useAuth = () => {
     handleRegister,
     handleLogin,
     handleGuestLogin,
-    handleGetMe,
     handleLogout,
   };
 };
