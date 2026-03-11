@@ -13,3 +13,5 @@ const authRouter = Router();
 authRouter.post("/register", registerValidator, register);
 
 export default authRouter;
+
+
