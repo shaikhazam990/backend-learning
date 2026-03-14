@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import morgan from "morgan"
-import cors from cors
+import cors from "cors"
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use(morgan("dev"))
 app.use(cors({
     origin:"http://localhost:5173",
-    Credential:true,
+    credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
 
 
