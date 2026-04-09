@@ -1,0 +1,96 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(46, 45, 45);
+  color: wheat;
+}
+
+
+.notes{
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding-block: 2rem;
+  padding-inline: 2rem;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+
+.note{
+  max-width: 20rem;
+  background-color: rgb(114, 112, 112);
+   border-radius: 2rem;
+   padding: 2rem;
+   display: flex;
+   justify-content: space-between;
+   overflow: hidden;
+   flex-direction: column;
+   align-items: center;
+
+}
+
+.create-form{
+  display: flex;
+  align-items: center;
+  padding-block: 2rem;
+  padding-inline: 4rem;
+  gap: 2rem;
+
+
+}
+
+input{
+  width: 15rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  text-align: center;
+}
+img{
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+img:hover{
+  transform: scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+}
+
+button{
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 0.75rem;
+  color: wheat;
+  background-color: green;
+  font-size: 1rem;
+}
+
+.note img {
+  order: 1;
+}
+
+.note h1 {
+  order: 2;
+  margin-top: 1rem;
+}
+
+.note p {
+  order: 3;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.note button {
+  order: 4;
+}

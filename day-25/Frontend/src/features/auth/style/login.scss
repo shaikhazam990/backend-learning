@@ -1,0 +1,364 @@
+// login.scss
+// globle.scss already handles: reset, body bg, color, font-family
+// button.scss already handles: .button base styles
+// This file: ONLY login page specific styles
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  // ── Animated background blobs ──
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: blobFloat 8s ease-in-out infinite alternate;
+  }
+
+  &::before {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(221, 66, 0, 0.15), transparent 70%);
+    top: -150px;
+    left: -150px;
+    filter: blur(60px);
+  }
+
+  &::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(221, 66, 0, 0.08), transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    filter: blur(80px);
+    animation-delay: -4s;
+  }
+}
+
+@keyframes blobFloat {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.15) translate(20px, 20px); }
+}
+
+// ── Card ─────────────────────────────────────────────────
+.login-page .form-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 44px 40px;
+  position: relative;
+  z-index: 1;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ── Logo ─────────────────────────────────────────────────
+.login-page .logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-align: center;
+  margin-bottom: 4px;
+
+  span {
+    color: #dd4200;
+  }
+}
+
+.login-page .tagline {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 36px;
+}
+
+// ── Heading ───────────────────────────────────────────────
+.login-page h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: whitesmoke;
+  margin-bottom: 28px;
+}
+
+// ── Form fields ───────────────────────────────────────────
+.login-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: whitesmoke;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+
+    &::placeholder {
+      color: #3a3a3a;
+    }
+
+    &:focus {
+      border-color: #dd4200;
+      background: rgba(221, 66, 0, 0.05);
+      box-shadow: 0 0 0 3px rgba(221, 66, 0, 0.1);
+    }
+  }
+}
+
+// ── Submit button (extends global .button) ─────────────────
+.login-page .button {
+  width: 100%;
+  margin-top: 10px;
+  padding-block: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(221, 66, 0, 0.3);
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 28px rgba(221, 66, 0, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98) translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// ── Error message ─────────────────────────────────────────
+.login-page .auth-error {
+  background: rgba(221, 66, 0, 0.08);
+  border: 1px solid rgba(221, 66, 0, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #dd4200;
+  margin-bottom: 16px;
+}
+
+// ── Footer link ───────────────────────────────────────────
+.login-page p {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+
+  // a color from globle.scss (#dd4200) already applies
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+
+// ── Variables ─────────────────────────────────
+$accent:     #7c3aed;
+$accent2:    #a855f7;
+$bg:         #0a0a0f;
+$bg2:        #12121a;
+$bg3:        #1a1a26;
+$border:     #2a2a3a;
+$text:       #f0f0f0;
+$text-muted: #888;
+$error:      #ef4444;
+
+// ── Page ──────────────────────────────────────
+.login-page {
+  min-height:      100vh;
+  background:      $bg;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         24px;
+}
+
+// ── Card ──────────────────────────────────────
+.form-container {
+  background:    $bg2;
+  border:        1px solid $border;
+  border-radius: 20px;
+  padding:       40px 36px;
+  width:         100%;
+  max-width:     420px;
+  display:       flex;
+  flex-direction: column;
+  gap:           16px;
+
+  h1 {
+    font-size:   1.6rem;
+    font-weight: 700;
+    color:       $text;
+    margin:      0;
+  }
+
+  p {
+    color:     $text-muted;
+    font-size: 0.9rem;
+    text-align: center;
+    margin:    0;
+
+    a {
+      color:           $accent2;
+      text-decoration: none;
+      font-weight:     600;
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+// ── Logo ──────────────────────────────────────
+.logo {
+  font-size:   1.8rem;
+  font-weight: 800;
+  color:       $text;
+  text-align:  center;
+
+  span {
+    background:             linear-gradient(135deg, $accent, $accent2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.tagline {
+  text-align: center;
+  color:      $text-muted !important;
+  font-size:  0.88rem !important;
+  margin-top: -8px !important;
+}
+
+// ── Error ─────────────────────────────────────
+.auth-error {
+  background:    rgba(239, 68, 68, 0.1);
+  border:        1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding:       12px 16px;
+  color:         #fca5a5;
+  font-size:     0.88rem;
+}
+
+// ── Form ──────────────────────────────────────
+form {
+  display:        flex;
+  flex-direction: column;
+  gap:            14px;
+}
+
+// ── Primary Button ────────────────────────────
+.button {
+  width:         100%;
+  padding:       14px;
+  background:    linear-gradient(135deg, $accent, $accent2);
+  border:        none;
+  border-radius: 10px;
+  color:         #fff;
+  font-size:     1rem;
+  font-weight:   700;
+  cursor:        pointer;
+  transition:    all 0.2s;
+
+  &:hover:not(:disabled) {
+    opacity:   0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ── Divider ───────────────────────────────────
+.auth-divider {
+  display:     flex;
+  align-items: center;
+  gap:         12px;
+
+  &::before, &::after {
+    content:    "";
+    flex:       1;
+    height:     1px;
+    background: $border;
+  }
+
+  span {
+    color:     $text-muted;
+    font-size: 0.82rem;
+  }
+}
+
+// ── Guest Button ──────────────────────────────
+.guest-btn {
+  width:           100%;
+  padding:         13px;
+  background:      transparent;
+  border:          2px solid $border;
+  border-radius:   10px;
+  color:           $text;
+  font-size:       0.95rem;
+  font-weight:     600;
+  cursor:          pointer;
+  transition:      all 0.2s;
+
+  &:hover:not(:disabled) {
+    border-color: $accent2;
+    background:   rgba(124, 58, 237, 0.08);
+    transform:    translateY(-1px);
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.guest-note {
+  text-align: center;
+  color:      $text-muted !important;
+  font-size:  0.76rem !important;
+  margin-top: -8px !important;
+}

@@ -1,0 +1,222 @@
+// LikedSongs.scss
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+.liked-page {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 100px;
+  font-family: 'DM Sans', sans-serif;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 2px; }
+}
+
+// ── Hero header — gradient like Spotify liked songs ───────
+.liked-page__hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 40px 32px 28px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mood-color, #dd4200) 25%, transparent) 0%,
+    transparent 100%
+  );
+  margin-bottom: 8px;
+}
+
+.liked-page__hero-icon {
+  width: 140px;
+  height: 140px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mood-color, #dd4200) 60%, #000),
+    color-mix(in srgb, var(--mood-color, #dd4200) 20%, #000)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  flex-shrink: 0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.liked-page__label {
+  font-size: 10px;
+  color: #888;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.liked-page__title {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.liked-page__count {
+  font-size: 13px;
+  color: #666;
+}
+
+// ── Songs list ────────────────────────────────────────────
+.liked-list {
+  padding: 0 24px;
+}
+
+.liked-col-header {
+  display: grid;
+  grid-template-columns: 32px 48px 1fr 90px 40px;
+  gap: 12px;
+  padding: 0 12px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #444;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.liked-divider {
+  height: 1px;
+  background: #1a1a2a;
+  margin-bottom: 8px;
+}
+
+// ── Song row ──────────────────────────────────────────────
+.liked-row {
+  display: grid;
+  grid-template-columns: 32px 48px 1fr 90px 40px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+
+    .liked-row__heart { opacity: 1; }
+  }
+
+  &--playing {
+    background: color-mix(in srgb, var(--row-color, #dd4200) 8%, transparent);
+    border-color: color-mix(in srgb, var(--row-color, #dd4200) 20%, transparent);
+  }
+
+  &--skeleton { pointer-events: none; }
+
+  &__num {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+
+    .liked-row--playing & { color: var(--row-color, #dd4200); }
+  }
+
+  &__poster {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  &__poster-skeleton {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ddd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .liked-row--playing & {
+      color: var(--row-color, #dd4200);
+      font-weight: 600;
+    }
+  }
+
+  &__artist {
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__mood {
+    font-size: 11px;
+    color: #555;
+    text-transform: capitalize;
+  }
+
+  // Heart button — always visible when filled, hidden until hover when empty
+  &__heart {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: transform 0.15s, color 0.15s, opacity 0.15s;
+    text-align: center;
+
+    &--filled {
+      color: var(--mood-color, #dd4200);
+      opacity: 1;
+
+      &:hover {
+        transform: scale(1.2);
+        color: #FF4E4E;
+      }
+    }
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────
+.liked-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 80px 0;
+  color: #444;
+
+  span  { font-size: 52px; color: #333; }
+  p     { font-size: 16px; font-weight: 600; color: #555; }
+  small { font-size: 13px; color: #444; }
+}
+
+// ── Skeleton shimmer ──────────────────────────────────────
+.skeleton {
+  background: linear-gradient(90deg, #1a1a2a 25%, #222235 50%, #1a1a2a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
