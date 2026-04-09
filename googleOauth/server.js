@@ -15,7 +15,6 @@ app.get('/', (req, res) => {
 
 
 
-
 app.use(passport.initialize());
 
 passport.use(new GoogleStrategy({
