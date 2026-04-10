@@ -13,15 +13,29 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use(cors({
-    origin: "http://localhost:5173",
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-}));
+  }),
+);
 app.use(passport.initialize());
 
 app.get("/", (req, res) => {
-    res.json({ message: "Server is running" });
+  res.json({ message: "Server is running" });
 });
 
 app.use("/api/auth", authRouter);
