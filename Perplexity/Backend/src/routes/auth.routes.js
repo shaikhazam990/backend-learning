@@ -17,18 +17,21 @@ authRouter.get("/google",
 );
 
 authRouter.get("/google/callback",
-    passport.authenticate("google", { session: false, failureRedirect: "http://localhost:5173/login?error=google_failed" }),
+    passport.authenticate("google", { 
+        session: false, 
+        failureRedirect: `${process.env.CLIENT_URL}/login?error=google_failed`
+    }),
     (req, res) => {
         const { token } = req.user;
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.redirect("http://localhost:5173/");
+        res.redirect(`${process.env.CLIENT_URL}/`);
     }
 );
 
