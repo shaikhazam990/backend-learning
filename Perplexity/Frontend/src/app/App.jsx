@@ -3,7 +3,7 @@ import { router } from "./app.routes";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser, setLoading, clearUser } from "../features/auth/auth.slice";
-import { getMe } from "../features/auth/service/auth.api";  // ✅ auth.api se
+import { getMe } from "../features/auth/service/auth.api";
 
 function App() {
   const dispatch = useDispatch();

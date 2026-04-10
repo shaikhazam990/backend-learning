@@ -135,7 +135,7 @@ export default function Login() {
         <div className="auth-card">
           <div className="auth-logo">
             <span className="auth-logo-dot" />
-            <span className="auth-logo-text">Perplexity</span>
+            <span className="auth-logo-text">Quick</span>
           </div>
 
           <h1 className="auth-heading">Welcome back</h1>

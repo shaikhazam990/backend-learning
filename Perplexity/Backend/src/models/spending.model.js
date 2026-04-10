@@ -13,7 +13,7 @@ const spendingSchema = new mongoose.Schema({
         required: true
     },
     description: { type: String, trim: true },
-    date: { type: String, required: true }, // "YYYY-MM-DD"
+    date: { type: String, required: true },
     currency: { type: String, default: 'INR' }
 }, { timestamps: true });
 

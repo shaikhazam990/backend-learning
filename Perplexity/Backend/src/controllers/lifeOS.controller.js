@@ -6,7 +6,6 @@ import { getLifeOSAdvice } from "../services/ai.service.js";
 const today = () => new Date().toISOString().split('T')[0];
 
 
-// ─── HABITS ───────────────────────────────────────────────
 export async function createHabit(req, res) {
     try {
         const { name, icon, category, frequency } = req.body;
@@ -69,13 +68,11 @@ export async function deleteHabit(req, res) {
     }
 }
 
-// ─── MOOD ─────────────────────────────────────────────────
 export async function logMood(req, res) {
     try {
         const { score, note, energy, stress } = req.body;
         const todayStr = today();
 
-        // One mood per day — update if exists
         const existing = await moodModel.findOne({ user: req.user.id, date: todayStr });
         if (existing) {
             existing.score = score;
@@ -107,7 +104,6 @@ export async function getMoods(req, res) {
     }
 }
 
-// ─── SPENDING ─────────────────────────────────────────────
 export async function addSpending(req, res) {
     try {
         const { amount, category, description } = req.body;
@@ -127,7 +123,7 @@ export async function getSpendings(req, res) {
         const { days = 30 } = req.query;
         const spendings = await spendingModel.find({ user: req.user.id })
             .sort({ date: -1 })
-            .limit(Number(days) * 20); // rough limit
+            .limit(Number(days) * 20);
         res.status(200).json({ success: true, spendings });
     } catch (err) {
         res.status(500).json({ success: false, err: err.message });
@@ -143,7 +139,6 @@ export async function deleteSpending(req, res) {
     }
 }
 
-// ─── AI ADVISOR ───────────────────────────────────────────
 export async function getDailyAdvice(req, res) {
     try {
         const userId = req.user.id;
@@ -151,7 +146,6 @@ export async function getDailyAdvice(req, res) {
         last7Days.setDate(last7Days.getDate() - 7);
         const dateStr = last7Days.toISOString().split('T')[0];
 
-        // Gather all recent data
         const [habits, moods, spendings] = await Promise.all([
             habitModel.find({ user: userId, isActive: true }),
             moodModel.find({ user: userId }).sort({ date: -1 }).limit(7),
@@ -166,7 +160,6 @@ export async function getDailyAdvice(req, res) {
     }
 }
 
-// ─── DASHBOARD SUMMARY ────────────────────────────────────
 export async function getDashboardSummary(req, res) {
     try {
         const userId = req.user.id;

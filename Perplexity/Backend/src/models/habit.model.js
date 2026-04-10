@@ -18,13 +18,12 @@ const habitSchema = new mongoose.Schema({
         enum: ['daily', 'weekly'],
         default: 'daily'
     },
-    completedDates: [{ type: String }], // "YYYY-MM-DD" format
+    completedDates: [{ type: String }],
     currentStreak: { type: Number, default: 0 },
     longestStreak: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-// Method to check if completed today
 habitSchema.methods.isCompletedToday = function () {
     const today = new Date().toISOString().split('T')[0];
     return this.completedDates.includes(today);

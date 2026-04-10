@@ -1,123 +1,149 @@
-import React, { useEffect, useState, useRef } from 'react'
-import ReactMarkdown from 'react-markdown'
-import { useSelector, useDispatch } from 'react-redux'
-import { useChat } from '../hooks/useChat'
-import { useAuth } from '../../auth/hook/useAuth'
-import { useNavigate } from 'react-router'
-import { setCurrentChatId } from '../chat.slice'
-import remarkGfm from 'remark-gfm'
+import React, { useEffect, useState, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import { useSelector, useDispatch } from "react-redux";
+import { useChat } from "../hooks/useChat";
+import { useAuth } from "../../auth/hook/useAuth";
+import { useNavigate } from "react-router";
+import { setCurrentChatId } from "../chat.slice";
+import remarkGfm from "remark-gfm";
 
 const TypingDots = () => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '10px 4px' }}>
-    {[0, 1, 2].map(i => (
-      <span key={i} className="typing-dot" style={{ animationDelay: `${i * 0.15}s` }} />
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      padding: "10px 4px",
+    }}
+  >
+    {[0, 1, 2].map((i) => (
+      <span
+        key={i}
+        className="typing-dot"
+        style={{ animationDelay: `${i * 0.15}s` }}
+      />
     ))}
   </div>
-)
+);
 
 export default function Dashboard() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const chat = useChat()
-  const { handleLogout } = useAuth()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const chat = useChat();
+  const { handleLogout } = useAuth();
 
-  const [chatInput, setChatInput]     = useState('')
-  const [isThinking, setIsThinking]   = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [loggingOut, setLoggingOut]   = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchOpen, setSearchOpen]   = useState(false)
-  const [deletingId, setDeletingId]   = useState(null)
+  const [chatInput, setChatInput] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const chats         = useSelector((state) => state.chat.chats)
-  const currentChatId = useSelector((state) => state.chat.currentChatId)
-  const user          = useSelector((state) => state.auth.user)
+  const chats = useSelector((state) => state.chat.chats);
+  const currentChatId = useSelector((state) => state.chat.currentChatId);
+  const user = useSelector((state) => state.auth.user);
 
-  const messagesEndRef = useRef(null)
-  const textareaRef    = useRef(null)
-  const searchRef      = useRef(null)
-
-  useEffect(() => {
-    chat.initializeSocketConnection()
-    chat.handleGetChats()
-  }, [])
+  const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
+  const searchRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chats, currentChatId, isThinking])
+    chat.initializeSocketConnection();
+    chat.handleGetChats();
+  }, []);
 
   useEffect(() => {
-    if (searchOpen) searchRef.current?.focus()
-  }, [searchOpen])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chats, currentChatId, isThinking]);
+
+  useEffect(() => {
+    if (searchOpen) searchRef.current?.focus();
+  }, [searchOpen]);
 
   const handleNewChat = () => {
-    dispatch(setCurrentChatId(null))
-    setChatInput('')
-    setSearchQuery('')
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
-  }
+    dispatch(setCurrentChatId(null));
+    setChatInput("");
+    setSearchQuery("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
+  };
 
   const handleSubmitMessage = async (e) => {
-    e.preventDefault()
-    const trimmed = chatInput.trim()
-    if (!trimmed || isThinking) return
-    setIsThinking(true)
-    setChatInput('')
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
+    e.preventDefault();
+    const trimmed = chatInput.trim();
+    if (!trimmed || isThinking) return;
+    setIsThinking(true);
+    setChatInput("");
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
     try {
-      await chat.handleSendMessage({ message: trimmed, chatId: currentChatId })
+      await chat.handleSendMessage({ message: trimmed, chatId: currentChatId });
     } catch (err) {
-      console.error('Send message error:', err)
+      console.error("Send message error:", err);
     } finally {
-      setIsThinking(false)
+      setIsThinking(false);
     }
-  }
+  };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmitMessage(e)
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitMessage(e);
     }
-  }
+  };
 
   const handleTextareaChange = (e) => {
-    setChatInput(e.target.value)
-    e.target.style.height = 'auto'
-    e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'
-  }
+    setChatInput(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
+  };
 
   const handleChipClick = (text) => {
-    setChatInput(text)
-    textareaRef.current?.focus()
-  }
+    setChatInput(text);
+    textareaRef.current?.focus();
+  };
 
   const onLogout = async () => {
-    setLoggingOut(true)
-    try { await handleLogout() } catch { setLoggingOut(false) }
-  }
+    setLoggingOut(true);
+    try {
+      await handleLogout();
+    } catch {
+      setLoggingOut(false);
+    }
+  };
 
   const handleDeleteChat = async (e, chatId) => {
-    e.stopPropagation()
-    setDeletingId(chatId)
+    e.stopPropagation();
+    setDeletingId(chatId);
     try {
-      await chat.handleDeleteChat(chatId)
-      if (currentChatId === chatId) dispatch(setCurrentChatId(null))
+      await chat.handleDeleteChat(chatId);
+      if (currentChatId === chatId) dispatch(setCurrentChatId(null));
     } catch (err) {
-      console.error('Delete error:', err)
+      console.error("Delete error:", err);
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
-  }
+  };
 
   const chatList = Object.values(chats)
     .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
-    .filter(c =>
-      searchQuery.trim() === '' ||
-      c.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter(
+      (c) =>
+        searchQuery.trim() === "" ||
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
 
-  const currentMessages = chats[currentChatId]?.messages || []
-  const isNewChat = !currentChatId
+  const currentMessages = chats[currentChatId]?.messages || [];
+  const isNewChat = !currentChatId;
+
+  const handleCopy = (code, btn) => {
+    navigator.clipboard.writeText(code);
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = "Copy";
+      btn.classList.remove("copied");
+    }, 1800);
+  };
 
   return (
     <>
@@ -141,6 +167,25 @@ export default function Dashboard() {
           background: radial-gradient(circle, rgba(32,217,192,0.03) 0%, transparent 70%);
           pointer-events: none; z-index: 0;
         }
+
+        /* word fade-in for streamed text */
+@keyframes wordPop { from{opacity:0;filter:blur(3px);transform:translateY(3px)} to{opacity:1;filter:blur(0);transform:translateY(0)} }
+.ai-bubble.streaming > * { animation: wordPop 0.25s ease both; }
+
+/* copy button on code blocks */
+.code-block-wrap { position: relative; }
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 7px; padding: 4px 10px;
+  font-size: 11px; font-family: 'Inter',sans-serif; cursor: pointer;
+  transition: all 0.18s; z-index: 2;
+}
+.copy-btn:hover { background: rgba(32,217,192,0.12); border-color: var(--accent); color: var(--accent); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent); }
+
+/* smooth scroll anchor */
+.messages-area { scroll-behavior: smooth; }
 
         /* ── SIDEBAR ── */
         .sidebar {
@@ -333,12 +378,14 @@ export default function Dashboard() {
 
         /* ── Streaming cursor ── */
         .streaming-cursor {
-          display: inline-block; width: 2px; height: 1em;
-          background: var(--accent); margin-left: 2px;
-          animation: cursorBlink 0.8s ease infinite;
-          vertical-align: text-bottom; border-radius: 1px;
-        }
-        @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--accent);
+  margin-left: 3px;
+  animation: cursorBlink 0.6s ease-in-out infinite;
+  vertical-align: text-bottom; border-radius: 2px;
+  box-shadow: 0 0 6px var(--accent);
+}
+@keyframes cursorBlink { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0;transform:scaleY(0.7)} }
 
         .typing-dot {
           display: inline-block; width: 7px; height: 7px; border-radius: 50%;
@@ -404,7 +451,7 @@ export default function Dashboard() {
 
       <div className="dash-root">
         {/* ── SIDEBAR ── */}
-        <aside className={`sidebar ${sidebarOpen ? '' : 'closed'}`}>
+        <aside className={`sidebar ${sidebarOpen ? "" : "closed"}`}>
           <div className="sidebar-logo">
             <span className="logo-dot" />
             Quick
@@ -412,16 +459,30 @@ export default function Dashboard() {
 
           <div className="nav-section">
             <button className="nav-link active">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               Chat
             </button>
-            <button className="nav-link" onClick={() => navigate('/lifeos')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
+            <button className="nav-link" onClick={() => navigate("/lifeos")}>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
               </svg>
               Life OS
             </button>
@@ -431,38 +492,77 @@ export default function Dashboard() {
 
           <div className="chat-actions-row">
             <button className="new-chat-btn" onClick={handleNewChat}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               New Chat
             </button>
             <button
-              className={`search-toggle-btn ${searchOpen ? 'active' : ''}`}
-              onClick={() => { setSearchOpen(p => !p); if (searchOpen) setSearchQuery('') }}
+              className={`search-toggle-btn ${searchOpen ? "active" : ""}`}
+              onClick={() => {
+                setSearchOpen((p) => !p);
+                if (searchOpen) setSearchQuery("");
+              }}
               title="Search chats"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </button>
           </div>
 
-          <div className={`search-wrap ${searchOpen ? 'open' : ''}`}>
+          <div className={`search-wrap ${searchOpen ? "open" : ""}`}>
             <div className="search-input-box">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted)', flexShrink: 0 }}>
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                style={{ color: "var(--muted)", flexShrink: 0 }}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
               <input
                 ref={searchRef}
                 className="search-input"
                 placeholder="Search chats..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               {searchQuery && (
-                <button className="search-clear" onClick={() => setSearchQuery('')}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <button
+                  className="search-clear"
+                  onClick={() => setSearchQuery("")}
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
               )}
@@ -472,7 +572,7 @@ export default function Dashboard() {
           {Object.values(chats).length > 0 && (
             <>
               <div className="sidebar-section-label">
-                {searchQuery ? `Results for "${searchQuery}"` : 'Recent'}
+                {searchQuery ? `Results for "${searchQuery}"` : "Recent"}
               </div>
               <div className="chat-list">
                 {chatList.length === 0 ? (
@@ -481,7 +581,7 @@ export default function Dashboard() {
                   chatList.map((c) => (
                     <button
                       key={c.id}
-                      className={`chat-item ${c.id === currentChatId ? 'active' : ''}`}
+                      className={`chat-item ${c.id === currentChatId ? "active" : ""}`}
                       onClick={() => chat.handleOpenChat(c.id, chats)}
                     >
                       <span className="chat-item-icon">💬</span>
@@ -493,15 +593,31 @@ export default function Dashboard() {
                         title="Delete chat"
                       >
                         {deletingId === c.id ? (
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
-                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                          <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            style={{ animation: "spin 1s linear infinite" }}
+                          >
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                           </svg>
                         ) : (
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                            <path d="M10 11v6"/><path d="M14 11v6"/>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                            <path d="M10 11v6" />
+                            <path d="M14 11v6" />
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                           </svg>
                         )}
                       </button>
@@ -515,20 +631,31 @@ export default function Dashboard() {
           <div className="sidebar-footer">
             <div className="user-pill">
               <div className="user-avatar">
-                {user?.username?.[0]?.toUpperCase() || 'U'}
+                {user?.username?.[0]?.toUpperCase() || "U"}
               </div>
               <div className="user-info">
-                <div className="user-name">{user?.username || 'User'}</div>
+                <div className="user-name">{user?.username || "User"}</div>
                 <div className="user-role">Free plan</div>
               </div>
             </div>
-            <button className="logout-btn" onClick={onLogout} disabled={loggingOut}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
+            <button
+              className="logout-btn"
+              onClick={onLogout}
+              disabled={loggingOut}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              {loggingOut ? 'Signing out...' : 'Sign out'}
+              {loggingOut ? "Signing out..." : "Sign out"}
             </button>
           </div>
         </aside>
@@ -536,15 +663,25 @@ export default function Dashboard() {
         {/* ── MAIN ── */}
         <div className="main-area">
           <div className="topbar">
-            <button className="toggle-btn" onClick={() => setSidebarOpen(p => !p)}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
+            <button
+              className="toggle-btn"
+              onClick={() => setSidebarOpen((p) => !p)}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
             <span className="topbar-title">
-              {currentChatId ? chats[currentChatId]?.title : 'New Conversation'}
+              {currentChatId ? chats[currentChatId]?.title : "New Conversation"}
             </span>
           </div>
 
@@ -553,20 +690,42 @@ export default function Dashboard() {
               <div className="empty-state">
                 <div className="empty-icon">✦</div>
                 <div className="empty-title">Ask me anything</div>
-                <p className="empty-sub">Search the web, write code, analyze data, or just have a conversation.</p>
+                <p className="empty-sub">
+                  Search the web, write code, analyze data, or just have a
+                  conversation.
+                </p>
                 <div className="suggestion-chips">
-                  {['What is quantum computing?','Latest AI news today','Write a Python script','Explain black holes'].map(s => (
-                    <button key={s} className="chip" onClick={() => handleChipClick(s)}>{s}</button>
+                  {[
+                    "What is quantum computing?",
+                    "Latest AI news today",
+                    "Write a Python script",
+                    "Explain black holes",
+                  ].map((s) => (
+                    <button
+                      key={s}
+                      className="chip"
+                      onClick={() => handleChipClick(s)}
+                    >
+                      {s}
+                    </button>
                   ))}
                 </div>
               </div>
             ) : (
               <>
                 {currentMessages.map((msg, i) => (
-                  <div key={i} className={`msg-row ${msg.role === 'user' ? 'user' : ''}`}>
-                    {msg.role === 'ai' && <div className="msg-avatar ai-avatar">✦</div>}
-                    <div className={`msg-bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}`}>
-                      {msg.role === 'user' ? (
+                  <div
+                    key={i}
+                    className={`msg-row ${msg.role === "user" ? "user" : ""}`}
+                  >
+                    {msg.role === "ai" && (
+                      <div className="msg-avatar ai-avatar">✦</div>
+                    )}
+                    <div
+                      className={`msg-bubble ${msg.role === "user" ? "user-bubble" : `ai-bubble${msg.isStreaming ? " streaming" : ""}`}`}
+                    >
+                      {" "}
+                      {msg.role === "user" ? (
                         <p>{msg.content}</p>
                       ) : (
                         <>
@@ -578,14 +737,42 @@ export default function Dashboard() {
                               ol: ({ children }) => <ol>{children}</ol>,
                               li: ({ children }) => <li>{children}</li>,
                               code: ({ children }) => <code>{children}</code>,
-                              pre: ({ children }) => <pre>{children}</pre>,
+                              pre: ({ children }) => {
+                                const code = children?.props?.children || "";
+                                return (
+                                  <div className="code-block-wrap">
+                                    <button
+                                      className="copy-btn"
+                                      onClick={(e) =>
+                                        handleCopy(
+                                          String(code),
+                                          e.currentTarget,
+                                        )
+                                      }
+                                    >
+                                      Copy
+                                    </button>
+                                    <pre>{children}</pre>
+                                  </div>
+                                );
+                              },
                               h1: ({ children }) => <h1>{children}</h1>,
                               h2: ({ children }) => <h2>{children}</h2>,
                               h3: ({ children }) => <h3>{children}</h3>,
-                              strong: ({ children }) => <strong>{children}</strong>,
-                              blockquote: ({ children }) => <blockquote>{children}</blockquote>,
-                              a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer">{children}</a>,
-                              table: ({ children }) => <table>{children}</table>,
+                              strong: ({ children }) => (
+                                <strong>{children}</strong>
+                              ),
+                              blockquote: ({ children }) => (
+                                <blockquote>{children}</blockquote>
+                              ),
+                              a: ({ href, children }) => (
+                                <a href={href} target="_blank" rel="noreferrer">
+                                  {children}
+                                </a>
+                              ),
+                              table: ({ children }) => (
+                                <table>{children}</table>
+                              ),
                               th: ({ children }) => <th>{children}</th>,
                               td: ({ children }) => <td>{children}</td>,
                               hr: () => <hr />,
@@ -600,9 +787,9 @@ export default function Dashboard() {
                         </>
                       )}
                     </div>
-                    {msg.role === 'user' && (
+                    {msg.role === "user" && (
                       <div className="msg-avatar user-avatar-msg">
-                        {user?.username?.[0]?.toUpperCase() || 'U'}
+                        {user?.username?.[0]?.toUpperCase() || "U"}
                       </div>
                     )}
                   </div>
@@ -610,7 +797,9 @@ export default function Dashboard() {
                 {isThinking && (
                   <div className="msg-row">
                     <div className="msg-avatar ai-avatar">✦</div>
-                    <div className="msg-bubble ai-bubble"><TypingDots /></div>
+                    <div className="msg-bubble ai-bubble">
+                      <TypingDots />
+                    </div>
                   </div>
                 )}
               </>
@@ -630,24 +819,42 @@ export default function Dashboard() {
                   placeholder="Ask anything..."
                   rows={1}
                 />
-                <button type="submit" className="send-btn" disabled={!chatInput.trim() || isThinking}>
+                <button
+                  type="submit"
+                  className="send-btn"
+                  disabled={!chatInput.trim() || isThinking}
+                >
                   {isThinking ? (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                      <rect x="6" y="6" width="12" height="12" rx="2"/>
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
                     </svg>
                   ) : (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="12" y1="19" x2="12" y2="5"/>
-                      <polyline points="5 12 12 5 19 12"/>
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5" />
+                      <polyline points="5 12 12 5 19 12" />
                     </svg>
                   )}
                 </button>
               </div>
-              <div className="input-hint">Enter to send · Shift+Enter for new line</div>
+              <div className="input-hint">
+                Enter to send · Shift+Enter for new line
+              </div>
             </form>
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }

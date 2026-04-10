@@ -17,15 +17,14 @@ const moodSchema = new mongoose.Schema({
         enum: ['terrible', 'bad', 'poor', 'low', 'okay', 'fine', 'good', 'great', 'excellent', 'amazing'],
     },
     note: { type: String, trim: true, maxlength: 500 },
-    energy: { type: Number, min: 1, max: 10 },   // energy level
-    stress:  { type: Number, min: 1, max: 10 },   // stress level
+    energy: { type: Number, min: 1, max: 10 },
+    stress:  { type: Number, min: 1, max: 10 },
     date: {
-        type: String, // "YYYY-MM-DD"
+        type: String,
         required: true,
     }
 }, { timestamps: true });
 
-// Auto-set label based on score
 moodSchema.pre('save', async function () {
     const labels = ['', 'terrible', 'bad', 'poor', 'low', 'okay', 'fine', 'good', 'great', 'excellent', 'amazing'];
     this.label = labels[this.score];

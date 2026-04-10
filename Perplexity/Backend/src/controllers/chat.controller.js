@@ -2,29 +2,26 @@ import { generateChatTitle, generateResponseStream } from "../services/ai.servic
 import chatModel from "../models/chat.model.js";
 import messageModel from "../models/message.model.js";
 
-// ── Helper: write SSE event ──────────────────────────────────────
+
 function sendEvent(res, data) {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
 
-// ── Send Message with Streaming ──────────────────────────────────
 export async function sendMessage(req, res) {
     const { message, chat: chatId } = req.body;
 
-    // ── SSE Headers ─────────────────────────────────────────────
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.flushHeaders(); // ← send headers before any async work
+    res.flushHeaders();
 
     let chat = null;
     let title = null;
 
     try {
-        // ── Create new chat if needed ────────────────────────────
         if (!chatId) {
             title = await generateChatTitle(message);
             chat = await chatModel.create({ user: req.user.id, title });
@@ -38,24 +35,20 @@ export async function sendMessage(req, res) {
 
         const activeChatId = chat._id;
 
-        // ── Save user message ────────────────────────────────────
         await messageModel.create({
             chat: activeChatId,
             content: message,
             role: "user"
         });
 
-        // ── Send init event ──────────────────────────────────────
         sendEvent(res, {
             type: 'init',
             chat: { _id: activeChatId },
             title: title || chat.title
         });
 
-        // ── Load full message history for context ────────────────
         const messages = await messageModel.find({ chat: activeChatId }).sort({ createdAt: 1 });
 
-        // ── Stream AI response token by token ────────────────────
         let fullContent = '';
 
         await generateResponseStream(messages, (chunk) => {
@@ -63,7 +56,6 @@ export async function sendMessage(req, res) {
             sendEvent(res, { type: 'chunk', text: chunk });
         });
 
-        // ── Save AI message to DB ────────────────────────────────
         const aiMessage = await messageModel.create({
             chat: activeChatId,
             content: fullContent,
@@ -76,11 +68,10 @@ export async function sendMessage(req, res) {
         console.error('sendMessage error:', err);
         sendEvent(res, { type: 'error', message: err.message });
     } finally {
-        res.end(); // ← always close the stream
+        res.end();
     }
 }
 
-// ── Get All Chats ────────────────────────────────────────────────
 export async function getChats(req, res) {
     try {
         const chats = await chatModel.find({ user: req.user.id }).sort({ updatedAt: -1 });
@@ -93,7 +84,6 @@ export async function getChats(req, res) {
     }
 }
 
-// ── Get Messages for a Chat ──────────────────────────────────────
 export async function getMessages(req, res) {
     try {
         const { chatId } = req.params;
@@ -113,7 +103,6 @@ export async function getMessages(req, res) {
     }
 }
 
-// ── Delete a Chat ────────────────────────────────────────────────
 export async function deleteChat(req, res) {
     try {
         const { chatId } = req.params;

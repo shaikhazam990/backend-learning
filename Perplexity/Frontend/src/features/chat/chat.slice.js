@@ -19,9 +19,9 @@ const chatSlice = createSlice({
       };
     },
     addNewMessage: (state, action) => {
-      const { chatId, content, role } = action.payload;
-      state.chats[chatId].messages.push({ content, role });
-    },
+  const { chatId, content, role, isStreaming = false } = action.payload;
+  state.chats[chatId].messages.push({ content, role, isStreaming });
+},
     addMessages: (state, action) => {
       const { chatId, messages } = action.payload;
       state.chats[chatId].messages.push(...messages);

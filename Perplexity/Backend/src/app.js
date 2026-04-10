@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import chatRouter from "./routes/chat.routes.js";
-import lifeOSRouter from "./routes/lifeOS.routes.js"; // ← ADD THIS
+import lifeOSRouter from "./routes/lifeOS.routes.js";
 import morgan from "morgan";
 import cors from "cors";
 import passport from "passport";
@@ -26,6 +26,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/chats", chatRouter);
-app.use("/api/lifeos", lifeOSRouter); // ← ADD THIS
+app.use("/api/lifeos", lifeOSRouter);
 
 export default app;

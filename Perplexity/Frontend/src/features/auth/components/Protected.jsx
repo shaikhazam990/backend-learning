@@ -69,7 +69,7 @@ export default function Protected({ children }) {
         <div className="splash">
           <div className="splash-logo">
             <span className="splash-dot" />
-            Perplexity
+            Quick
           </div>
           <div className="splash-bar">
             <div className="splash-bar-fill" />

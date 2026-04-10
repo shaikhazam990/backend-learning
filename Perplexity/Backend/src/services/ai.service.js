@@ -6,7 +6,6 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import * as z from "zod";
 import { searchInternet } from "./internet.service.js";
 
-// ── Models ───────────────────────────────────────────────────────
 const geminiModel = new ChatGoogleGenerativeAI({
     model: "gemini-2.0-flash",
     apiKey: process.env.GEMINI_API_KEY
@@ -17,7 +16,6 @@ const mistralModel = new ChatMistralAI({
     apiKey: process.env.MISTRAL_API_KEY
 });
 
-// ── Tools ────────────────────────────────────────────────────────
 const searchInternetTool = tool(
     searchInternet,
     {
@@ -34,7 +32,6 @@ const agent = createReactAgent({
     tools: [searchInternetTool],
 });
 
-// ── Helper: map DB messages to LangChain messages ────────────────
 function toLangChainMessages(messages) {
     return messages
         .map(msg => {
@@ -45,7 +42,6 @@ function toLangChainMessages(messages) {
         .filter(Boolean);
 }
 
-// ── Streaming Response (token by token) ──────────────────────────
 export async function generateResponseStream(messages, onChunk) {
     const stream = await agent.stream(
         {
@@ -58,11 +54,10 @@ export async function generateResponseStream(messages, onChunk) {
                 ...toLangChainMessages(messages)
             ]
         },
-        { streamMode: "messages" }  // ← token-by-token streaming
+        { streamMode: "messages" }
     );
 
     for await (const [chunk, metadata] of stream) {
-        // Only forward final AI text tokens — skip tool call chunks
         if (
             chunk.content &&
             metadata?.langgraph_node === "agent" &&
@@ -73,7 +68,6 @@ export async function generateResponseStream(messages, onChunk) {
     }
 }
 
-// ── Non-streaming Response (for internal use) ────────────────────
 export async function generateResponse(messages) {
     const response = await agent.invoke({
         messages: [
@@ -88,7 +82,6 @@ export async function generateResponse(messages) {
     return response.messages[response.messages.length - 1].content;
 }
 
-// ── Chat Title Generator ─────────────────────────────────────────
 export async function generateChatTitle(message) {
     const response = await mistralModel.invoke([
         new SystemMessage(`
@@ -100,7 +93,6 @@ export async function generateChatTitle(message) {
     return response.content.replace(/\*/g, '').trim();
 }
 
-// ── Life OS AI Advisor ───────────────────────────────────────────
 export async function getLifeOSAdvice({ habits, moods, spendings }) {
     const last7 = [];
     for (let i = 6; i >= 0; i--) {

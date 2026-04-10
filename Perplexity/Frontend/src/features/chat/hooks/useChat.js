@@ -10,11 +10,9 @@ import { useDispatch } from "react-redux";
 export const useChat = () => {
     const dispatch = useDispatch()
 
-    // ── Send message with streaming ──────────────────────────
     async function handleSendMessage({ message, chatId }) {
         const activeChatIdRef = { current: chatId }
 
-        // Show user message immediately for existing chats
         if (chatId) {
             dispatch(addNewMessage({ chatId, content: message, role: "user" }))
         }
@@ -28,7 +26,6 @@ export const useChat = () => {
                         activeChatIdRef.current = chat._id
                         dispatch(setCurrentChatId(chat._id))
                     }
-                    // Add empty AI message — streaming will fill it
                     dispatch(addNewMessage({
                         chatId: activeChatIdRef.current,
                         content: '',
@@ -56,7 +53,6 @@ export const useChat = () => {
         }
     }
 
-    // ── Get all chats ────────────────────────────────────────
     async function handleGetChats() {
         dispatch(setLoading(true))
         try {
@@ -78,7 +74,6 @@ export const useChat = () => {
         }
     }
 
-    // ── Open a chat and load messages if needed ──────────────
     async function handleOpenChat(chatId, chats) {
         if (chats[chatId]?.messages.length === 0) {
             try {
@@ -98,7 +93,6 @@ export const useChat = () => {
         dispatch(setCurrentChatId(chatId))
     }
 
-    // ── Delete a chat ────────────────────────────────────────
     async function handleDeleteChat(chatId) {
         try {
             await deleteChat(chatId)
@@ -109,7 +103,6 @@ export const useChat = () => {
         }
     }
 
-    // ── New chat ─────────────────────────────────────────────
     function handleNewChat() {
         dispatch(setCurrentChatId(null))
     }

@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router";
 import Login from "../features/auth/pages/Login";
 import Register from "../features/auth/pages/Register";
 import Dashboard from "../features/chat/pages/Dashboard";
-import LifeOS from "../features/lifeOS/pages/LifeOS";   // ← ADD THIS
+import LifeOS from "../features/lifeOS/pages/LifeOS";
 import Protected from "../features/auth/components/Protected";
 import { Navigate } from "react-router";
 
@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
         element: <Protected><Dashboard /></Protected>
     },
     {
-        path: "/lifeos",                                  // ← ADD THIS
+        path: "/lifeos",
         element: <Protected><LifeOS /></Protected>
     },
     { path: "/dashboard", element: <Navigate to="/" replace /> }
