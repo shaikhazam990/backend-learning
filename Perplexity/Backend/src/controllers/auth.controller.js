@@ -39,7 +39,7 @@ export async function register(req, res) {
                     <p>Hi ${username},</p>
                     <p>Thank you for registering at <strong>Perplexity</strong>!</p>
                     <p>Please verify your email:</p>
-                    <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">
+<a href="${process.env.BACKEND_URL}/api/auth/verify-email?token=${emailVerificationToken}">
                         Verify Email
                     </a>
                     <p>This link expires in 24 hours.</p>
@@ -182,14 +182,14 @@ export async function verifyEmail(req, res) {
       return res.send(`
                 <h1>Already Verified!</h1>
                 <p>Your email is already verified.</p>
-                <a href="http://localhost:5173/login">Go to Login</a>
+<a href="${process.env.CLIENT_URL}/login">Go to Login</a>
             `);
     }
 
     user.verified = true;
     await user.save();
 
-    return res.redirect("http://localhost:5173/login?verified=true");
+    return res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);
   } catch (err) {
     return res.status(400).json({
       message: "Invalid or expired token",
@@ -202,8 +202,8 @@ export async function verifyEmail(req, res) {
 export async function logout(req, res) {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
 
   res.status(200).json({
